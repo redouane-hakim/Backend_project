@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model, authenticate
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from core.permissions import IsAdminUser
@@ -51,6 +52,7 @@ class SubscriptionView(generics.CreateAPIView):
             subscribed_to.save()
             return Response({"detail": "Subscribed."})
 class CurrentUserView(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     def get(self, request):
         user = request.user

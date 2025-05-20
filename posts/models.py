@@ -9,6 +9,7 @@ class Post(models.Model):
     speciality = models.CharField(max_length=100)
     contact_info = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
+    image=models.ImageField(upload_to='post_images/', null=True, blank=True)
 
     def __str__(self):
         return f"Post by {self.author.username}"
