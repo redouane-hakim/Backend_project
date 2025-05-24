@@ -1,11 +1,31 @@
+from django.contrib.auth import get_user_model
+from django.contrib.postgres import serializers
 from rest_framework import generics, permissions, status
+from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
 from .models import Conversation, Message
 from .serializers import ConversationSerializer, MessageSerializer
 from .permissions import IsParticipant
 from posts.models import Product
 from django.db.models import Q
 
+User= get_user_model()
+class StartConversationView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+
+        user=request.user
+
+        target_user = User.objects.get(id=user_id)
+
+        # Create a new conversation
+        conversation = Conversation.objects.create(user1=user, user2=target_user)
+
+        # Return the conversation ID or success message
+        return Response({"conversation_id": conversation.id}, status=status.HTTP_201_CREATED)
 class ConversationListView(generics.ListAPIView):
     serializer_class = ConversationSerializer
     permission_classes = [permissions.IsAuthenticated]

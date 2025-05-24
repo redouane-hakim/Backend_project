@@ -28,10 +28,37 @@ class ProductListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-class PostDetailView(generics.RetrieveAPIView):
+class PostDetailView(generics.RetrieveUpdateAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        # Check if we need to turn a Post into a Product
+        if instance.price is None and 'price' in request.data:
+            # If price is provided, create Product (which is a subclass of Post)
+            data = request.data.copy()
+            data['price'] = float(data['price'])  # Ensure price is a number
+            serializer = self.get_serializer(instance, data=data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
+
+        # If price is None or being removed, treat as a Post
+        if instance.price is not None and 'price' in request.data and request.data['price'] is None:
+            data = request.data.copy()
+            data['price'] = None
+            serializer = self.get_serializer(instance, data=data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
+
+        return super().update(request, *args, **kwargs)
 
 class CommentCreateView(generics.CreateAPIView):
     serializer_class = CommentSerializer

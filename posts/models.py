@@ -15,7 +15,7 @@ class Post(models.Model):
         return f"Post by {self.author.username}"
 
 class Product(Post):
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=10, decimal_places=2,null=True,blank=True)
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')

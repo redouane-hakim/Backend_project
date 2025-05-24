@@ -57,7 +57,9 @@ class CurrentUserView(APIView):
     def get(self, request):
         user = request.user
         profile = user.profile
+        contact_info = profile.phone_number if profile.phone_number else profile.email
         profile_data = ProfileSerializer(profile).data
+        profile_data['contact_info'] = contact_info
         return Response({
             'user': {
                 'id': user.id,
