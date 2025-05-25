@@ -60,6 +60,17 @@ class PostDetailView(generics.RetrieveUpdateAPIView):
 
         return super().update(request, *args, **kwargs)
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        type_filter = self.request.query_params.get('type')
+
+        if type_filter == 'product':
+            queryset = queryset.filter(price__isnull=False)
+        elif type_filter == 'post':
+            queryset = queryset.filter(price__isnull=True)
+
+        return queryset
+
 class CommentCreateView(generics.CreateAPIView):
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]

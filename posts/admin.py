@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post, Product, Comment, Like, Report
+from .models import Post, Product, Comment, Like
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
@@ -20,7 +20,4 @@ class CommentAdmin(admin.ModelAdmin):
 class LikeAdmin(admin.ModelAdmin):
     list_display = ('id', 'post', 'user', 'value')
 
-@admin.register(Report)
-class ReportAdmin(admin.ModelAdmin):
-    list_display = ('id', 'reporter', 'reported_user', 'status', 'created_at')
-    list_filter = ('status',)
+

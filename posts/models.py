@@ -35,15 +35,4 @@ class Like(models.Model):
     class Meta:
         unique_together = ('post', 'user')  # XOR enforced via logic
 
-class Report(models.Model):
-    REPORT_CHOICES = (
-        ('post', 'Post'),
-        ('user', 'User'),
-    )
-    reporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reports_made')
-    post = models.ForeignKey(Post, null=True, blank=True, on_delete=models.CASCADE)
-    reported_user = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE, related_name='reports_received')
-    report_type = models.CharField(max_length=10, choices=REPORT_CHOICES)
-    description = models.TextField()
-    status = models.CharField(max_length=20, default='open')
-    created_at = models.DateTimeField(auto_now_add=True)
+

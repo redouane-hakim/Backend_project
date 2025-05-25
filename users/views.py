@@ -57,7 +57,7 @@ class CurrentUserView(APIView):
     def get(self, request):
         user = request.user
         profile = user.profile
-        contact_info = profile.phone_number if profile.phone_number else profile.email
+        contact_info = profile.phone_number if profile.phone_number else user.email
         profile_data = ProfileSerializer(profile).data
         profile_data['contact_info'] = contact_info
         return Response({
@@ -87,3 +87,31 @@ class LoginView(APIView):
             })
         else:
             return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+class UserProfileByIdView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+            profile = user.profile
+        except User.DoesNotExist:
+            return Response({"detail": "User not found"}, status=404)
+        except Profile.DoesNotExist:
+            return Response({"detail": "Profile not found"}, status=404)
+
+        serialized = ProfileSerializer(profile).data
+
+        # Add subscription status (true/false)
+        is_subscribed = Subscription.objects.filter(
+            subscriber=request.user, subscribed_to=user
+        ).exists()
+
+        return Response({
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "phone_number": profile.phone_number,
+            "speciality": profile.speciality,
+            "image": profile.image.url if profile.image else None,
+            "is_subscribed": is_subscribed
+        })

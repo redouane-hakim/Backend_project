@@ -6,6 +6,7 @@ class ConversationAdmin(admin.ModelAdmin):
     list_display = ('id', 'created_at')
     filter_horizontal = ('participants',)
 
+
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
     list_display = ('id', 'conversation', 'sender')

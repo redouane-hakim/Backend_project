@@ -18,3 +18,12 @@ class UserReportSerializer(serializers.ModelSerializer):
         model = UserReport
         fields = '__all__'
         read_only_fields = ['reporter', 'status', 'created_at']
+
+class PostReportSerializer(serializers.ModelSerializer):
+    reporter = UserSerializer(read_only=True)
+    reported_user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = UserReport
+        fields = '__all__'
+        read_only_fields = ['reporter', 'status', 'created_at',]

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Post, Product, Comment, Like, Report
+from .models import Post, Product, Comment, Like
 from users.serializers import UserSerializer
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -21,10 +21,13 @@ class PostSerializer(serializers.ModelSerializer):
     likes_count = serializers.SerializerMethodField()
     image = serializers.ImageField(required=False, allow_null=True)
     price = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, allow_null=True)# <-- add this line
+    type = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
-        fields = ['id', 'author', 'content', 'speciality', 'contact_info','price', 'image', 'created_at', 'comments', 'likes_count']
+        fields = ['id', 'author', 'content', 'speciality', 'contact_info','price', 'image', 'created_at', 'comments', 'likes_count','type']
+    def get_type(self, obj):
+        return 'product' if hasattr(obj, 'price') and obj.price is not None else 'post'
 
     def create(self, validated_data):
         if 'price' in validated_data:
@@ -52,10 +55,4 @@ class ProductSerializer(PostSerializer):
         model = Product
         fields = PostSerializer.Meta.fields + ['price']
 
-class ReportSerializer(serializers.ModelSerializer):
-    reporter = UserSerializer(read_only=True)
 
-    class Meta:
-        model = Report
-        fields = '__all__'
-        read_only_fields = ['reporter', 'status', 'created_at']
